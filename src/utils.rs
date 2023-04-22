@@ -4,17 +4,11 @@ use piston_window::color::WHITE;
 use piston_window::Context;
 use piston_window::G2d;
 
-const PADDLE_WIDTH: f64 = 8 as f64;
-const PADDLE_HEIGHT: f64 = 48 as f64;
+pub const PADDLE_WIDTH: f64 = 8 as f64;
+pub const PADDLE_HEIGHT: f64 = 48 as f64;
 const BALL_RAD: f64 = 8 as f64;
-
-// pub fn draw_player(sx: i32, sy: i32, con: Context, g: &mut G2d) {
-//     rectangle(WHITE, [(sx as f64), (sy as f64), PLAYER_WIDTH, PLAYER_HEIGHT], con.transform, g);
-// }
-
-// pub fn draw_ball(sx: i32, sy: i32, con: Context, g: &mut G2d) {
-//     rectangle(WHITE, [(sx as f64), (sy as f64), BALL_WIDTH, BALL_WIDTH], con.transform, g);
-// }
+pub const WINDOW_WIDTH: f64 = 512 as f64;
+pub const WINDOW_HEIGHT: f64 = 512 as f64;
 
 pub struct Paddle {
     pub x: i32,
@@ -34,13 +28,29 @@ impl Paddle {
     pub fn draw(&self, con: &Context, g: &mut G2d) {
         rectangle(WHITE, [(self.x as f64), (self.y as f64), PADDLE_WIDTH, PADDLE_HEIGHT], con.transform, g);
     }
+
+    pub fn update(&mut self, key: char, is_held: bool, ball_y: i32) {
+        if self.is_player {
+            if (key == 'u') && (is_held) {
+                self.y -= 10;
+            } else if (key == 'd') && (is_held) {
+                self.y += 10;
+            }
+        } else {
+            if self.y > 2 * (PADDLE_HEIGHT as i32) + ball_y {
+                self.y -= 10;
+            } else if self.y < ball_y - 2 * (PADDLE_HEIGHT as i32) {
+                self.y += 10;
+            }
+        }
+    }
 }
 
 pub struct Ball {
     pub x: i32,
     pub y: i32,
-    pub x_vel: f64,
-    pub y_vel: f64,
+    pub x_vel: i32,
+    pub y_vel: i32,
 }
 
 impl Ball {
@@ -48,12 +58,27 @@ impl Ball {
         Ball {
             x: x,
             y: y,
-            x_vel: 1.0,
-            y_vel: 0.0,
+            x_vel: 1,
+            y_vel: 2,
         }
     }
 
     pub fn draw(&self, con: &Context, g: &mut G2d) {
         ellipse(WHITE, [(self.x as f64), (self.y as f64), BALL_RAD, BALL_RAD], con.transform, g);
+    }
+
+    pub fn update(&mut self) {
+        if self.y <= 0 || self.y >= (WINDOW_HEIGHT as i32) {
+            self.y_vel *= -1;
+        }
+
+        if self.x <= 10 || self.x >= (WINDOW_WIDTH as i32) - 10 {
+            self.x_vel *= -1;
+            self.y = (WINDOW_HEIGHT / 2.0) as i32;
+            self.x = (WINDOW_WIDTH / 2.0) as i32;
+        }
+
+        self.x += self.x_vel;
+        self.y += self.y_vel;
     }
 }
