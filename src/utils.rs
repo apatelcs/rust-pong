@@ -32,14 +32,14 @@ impl Paddle {
     pub fn update(&mut self, key: char, is_held: bool, ball_y: i32) {
         if self.is_player {
             if (key == 'u') && (is_held) {
-                self.y -= 10;
+                self.y -= 8;
             } else if (key == 'd') && (is_held) {
-                self.y += 10;
+                self.y += 8;
             }
         } else {
-            if self.y > 2 * (PADDLE_HEIGHT as i32) + ball_y {
+            if self.y > ((PADDLE_HEIGHT / 4.0) as i32) + ball_y {
                 self.y -= 10;
-            } else if self.y < ball_y - 2 * (PADDLE_HEIGHT as i32) {
+            } else if self.y < ball_y - ((PADDLE_HEIGHT / 4.0) as i32) {
                 self.y += 10;
             }
         }
@@ -72,10 +72,10 @@ impl Ball {
             self.y_vel *= -1;
         }
 
-        if self.x <= 10 || self.x >= (WINDOW_WIDTH as i32) - 10 {
-            self.x_vel *= -1;
+        if self.x <= 10 || self.x >= (WINDOW_WIDTH as i32) {
             self.y = (WINDOW_HEIGHT / 2.0) as i32;
             self.x = (WINDOW_WIDTH / 2.0) as i32;
+            self.x_vel *= -1;
         }
 
         self.x += self.x_vel;
